@@ -69,6 +69,7 @@ class Film(models.Model):
     genres = models.ManyToManyField(Genre, blank=True, verbose_name='Жанры')
     categories = models.ManyToManyField(FilmCategory, blank=True, verbose_name='Категории')
     content_types = models.ManyToManyField(FilmContentType, blank=True, verbose_name='Тип контента')
+    is_new = models.BooleanField('Новинка', default=False)
     cover = models.ImageField('Обложка', upload_to='films/%Y/%m/', blank=True, null=True)
     created_at = models.DateTimeField('Создано', auto_now_add=True)
     updated_at = models.DateTimeField('Обновлено', auto_now=True)

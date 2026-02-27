@@ -343,16 +343,94 @@ body {
   color: #FFFFFF;
 }
 
-.page-content--catalog > p:first-of-type {
+.page-content--catalog .catalog-intro {
   color: rgba(255, 255, 255, 0.75);
   line-height: 1.5;
+}
+
+.catalog-layout {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+  align-items: flex-start;
+}
+
+.catalog-filters {
+  flex-shrink: 0;
+  width: 220px;
+  background: #2E1457;
+  padding: 1.25rem 1rem;
+  border-radius: 0;
+}
+
+.catalog-filters__block {
+  margin-bottom: 1.5rem;
+}
+
+.catalog-filters__block:last-child {
+  margin-bottom: 0;
+}
+
+.catalog-filters__title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin: 0 0 0.75rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.catalog-filters__check {
+  display: block;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  padding: 0.25rem 0;
+}
+
+.catalog-filters__check input {
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+.catalog-filters__age {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.catalog-filters__age-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.catalog-filters__age-label input {
+  width: 4rem;
+  padding: 0.35rem 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.catalog-filters__age-label input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.catalog-main {
+  flex: 1;
+  min-width: 0;
 }
 
 .page-content--catalog .catalog-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
-  margin-top: 2rem;
+  margin-top: 0;
 }
 
 .page-content--catalog .catalog-card {
@@ -374,6 +452,20 @@ body {
   aspect-ratio: 4 / 3;
   background: #1ECAD3;
   flex-shrink: 0;
+  position: relative;
+}
+
+.catalog-card__badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  padding: 0.35rem 0.65rem;
+  background: var(--kaleido-red);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .page-content--catalog .catalog-card__body {
@@ -491,6 +583,22 @@ body {
 }
 
 @media (max-width: 900px) {
+  .catalog-layout {
+    flex-direction: column;
+  }
+
+  .catalog-filters {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .catalog-filters__block {
+    margin-bottom: 0;
+    min-width: 160px;
+  }
+
   .page-content--catalog .catalog-grid {
     grid-template-columns: repeat(2, 1fr);
   }

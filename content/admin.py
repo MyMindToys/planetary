@@ -24,8 +24,9 @@ class FilmContentTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Film)
 class FilmAdmin(admin.ModelAdmin):
-    list_display = ('title', 'duration_minutes', 'age_rating_min', 'age_rating_max')
-    list_filter = ('genres', 'categories', 'content_types')
+    list_display = ('title', 'is_new', 'duration_minutes', 'age_rating_min', 'age_rating_max')
+    list_editable = ('is_new',)
+    list_filter = ('genres', 'categories', 'content_types', 'is_new')
     search_fields = ('title', 'description')
     filter_horizontal = ('genres', 'categories', 'content_types')
     readonly_fields = ('created_at', 'updated_at')

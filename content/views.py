@@ -1,6 +1,15 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import MenuCard, Film
+from .models import MenuCard, Film, Genre, FilmCategory, FilmContentType
+
+
+def api_catalog_filters(request):
+    """JSON: списки значений для фильтров каталога из моделей (категории, жанры, типы контента)."""
+    return JsonResponse({
+        'categories': [c.name for c in FilmCategory.objects.all()],
+        'genres': [g.name for g in Genre.objects.all()],
+        'content_types': [t.name for t in FilmContentType.objects.all()],
+    })
 
 
 def api_films(request):
@@ -16,6 +25,7 @@ def api_films(request):
             'genres': [g.name for g in f.genres.all()],
             'categories': [c.name for c in f.categories.all()],
             'content_types': [t.name for t in f.content_types.all()],
+            'is_new': f.is_new,
             'cover': f.cover.url if f.cover else None,
         })
     return JsonResponse({'films': films})
