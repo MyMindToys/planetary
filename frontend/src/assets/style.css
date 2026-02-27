@@ -326,6 +326,9 @@ body {
 }
 
 .page-content--catalog {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
   background: #1F0B3A;
   padding: 2.5rem 2rem 3rem;
   min-height: 50vh;
