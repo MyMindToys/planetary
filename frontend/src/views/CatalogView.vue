@@ -5,10 +5,10 @@
 
     <div class="catalog-grid">
       <article v-for="film in films" :key="film.title" class="catalog-card">
-        <div class="catalog-card__img"></div>
+        <div class="catalog-card__img" :style="film.cover ? { backgroundImage: `url(${film.cover})` } : {}"></div>
         <div class="catalog-card__body">
           <h2 class="catalog-card__title"><a href="#">{{ film.title }}</a></h2>
-          <p class="catalog-card__desc">{{ film.desc }}</p>
+          <p class="catalog-card__desc">{{ filmDesc(film) }}</p>
         </div>
       </article>
     </div>
@@ -20,12 +20,34 @@
 </template>
 
 <script setup>
-const films = [
-  { title: 'Космическая одиссея', desc: 'Для всей семьи · 25 мин · 6+. Полнокупольное путешествие по Солнечной системе.' },
-  { title: 'Звёздное небо над нами', desc: 'Образовательная · 30 мин · 8+. Узнайте, как устроено небо и что видят астрономы.' },
-  { title: 'Путешествие к планетам', desc: 'Детская программа · 20 мин · 4+. Приключение для самых маленьких зрителей.' },
-  { title: 'Тёмная материя', desc: 'Научно-популярная · 35 мин · 12+. Загадки Вселенной и современная астрофизика.' },
-  { title: 'Сказки звёздного неба', desc: 'Для малышей · 15 мин · 3+. Добрые истории под куполом планетария.' },
-  { title: 'Рождённые звёздами', desc: 'Для всей семьи · 28 мин · 6+. Как рождаются звёзды и планеты.' },
-]
+import { ref, onMounted } from 'vue'
+
+const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/\s*$/, '')
+const films = ref([])
+
+function filmDesc(film) {
+  const parts = []
+  if (film.content_types?.length) parts.push(film.content_types.join(', '))
+  if (film.genres?.length) parts.push(film.genres.join(', '))
+  if (film.duration_minutes) parts.push(`${film.duration_minutes} мин`)
+  const age = ageStr(film.age_rating_min, film.age_rating_max)
+  if (age) parts.push(age)
+  const line = parts.join(' · ')
+  return line ? `${line}. ${film.description || ''}`.trim() : (film.description || '')
+}
+
+function ageStr(min, max) {
+  if (min != null && max != null) return `${min}+–${max}+`
+  if (min != null) return `${min}+`
+  if (max != null) return `до ${max}+`
+  return ''
+}
+
+onMounted(async () => {
+  try {
+    const r = await fetch(`${apiBase}/api/films/`)
+    const data = await r.json()
+    if (data.films?.length) films.value = data.films
+  } catch (_) {}
+})
 </script>

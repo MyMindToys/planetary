@@ -18,12 +18,57 @@ class Image(models.Model):
         return self.title or str(self.image)
 
 
+class Genre(models.Model):
+    """Жанр фильма (можно назначать несколько на один фильм)."""
+    name = models.CharField('Название', max_length=100)
+
+    class Meta:
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
+class FilmCategory(models.Model):
+    """Категория аудитории: детский сад, начальный класс и т.д."""
+    name = models.CharField('Название', max_length=64)
+    order = models.PositiveSmallIntegerField('Порядок', default=0)
+
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+        ordering = ['order', 'name']
+
+    def __str__(self):
+        return self.name
+
+
+class FilmContentType(models.Model):
+    """Тип контента: аттракционы, клипы, краткометражные фильмы."""
+    name = models.CharField('Название', max_length=64)
+    order = models.PositiveSmallIntegerField('Порядок', default=0)
+
+    class Meta:
+        verbose_name = 'Тип контента'
+        verbose_name_plural = 'Типы контента'
+        ordering = ['order', 'name']
+
+    def __str__(self):
+        return self.name
+
+
 class Film(models.Model):
     """Полнокупольная программа (фильм) в каталоге."""
     title = models.CharField('Название', max_length=255)
     description = models.TextField('Описание', blank=True)
     duration_minutes = models.PositiveIntegerField('Длительность (мин)', default=0)
-    age_rating = models.CharField('Возраст', max_length=32, blank=True)
+    age_rating_min = models.PositiveSmallIntegerField('Возраст от', null=True, blank=True)
+    age_rating_max = models.PositiveSmallIntegerField('Возраст до', null=True, blank=True)
+    genres = models.ManyToManyField(Genre, blank=True, verbose_name='Жанры')
+    categories = models.ManyToManyField(FilmCategory, blank=True, verbose_name='Категории')
+    content_types = models.ManyToManyField(FilmContentType, blank=True, verbose_name='Тип контента')
     cover = models.ImageField('Обложка', upload_to='films/%Y/%m/', blank=True, null=True)
     created_at = models.DateTimeField('Создано', auto_now_add=True)
     updated_at = models.DateTimeField('Обновлено', auto_now=True)
