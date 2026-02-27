@@ -19,6 +19,7 @@ urlpatterns = [
     path('api/menu-cards/', api_menu_cards),
     re_path(r'^assets/(?P<path>.*)$', serve, {'document_root': str(FRONTEND_DIST / 'assets')}),
     re_path(r'^img/(?P<path>.*)$', serve, {'document_root': str(FRONTEND_DIST / 'img')}),
+    re_path(r'^(?P<path>header_fon\.jpg)$', serve, {'document_root': str(FRONTEND_DIST)}),
     path('', planetary_views.spa_view),
     path('catalog/', planetary_views.spa_view),
     path('news/', planetary_views.spa_view),
