@@ -1,10 +1,37 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>{% block title %}Planetary{% endblock %}</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Калейдоскоп — Мобильный планетарий{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-{% block content %}{% endblock %}
+  <header class="header">
+    <div class="header-inner">
+      <a href="{% url 'content:index' %}" class="logo">Калейдоскоп</a>
+      <nav class="nav">
+        <a href="{% url 'content:index' %}">Главная</a>
+        <a href="{% url 'content:catalog' %}">Каталог фильмов</a>
+        <a href="{% url 'content:news' %}">Новости</a>
+        <a href="{% url 'content:zayavka' %}">Оставить заявку</a>
+      </nav>
+      <div class="contacts">
+        <a href="tel:+79001234567">+7 (900) 123-45-67</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <p>© Мобильный планетарий Калейдоскоп</p>
+      <p><a href="tel:+79001234567">+7 (900) 123-45-67</a></p>
+    </div>
+  </footer>
 </body>
 </html>
