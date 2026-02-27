@@ -55,15 +55,7 @@
 
       <div class="catalog-main">
         <div class="catalog-grid">
-          <article v-for="film in filteredFilms" :key="film.title" class="catalog-card">
-            <div class="catalog-card__img" :style="film.cover ? { backgroundImage: `url(${film.cover})` } : {}">
-              <span v-if="film.is_new" class="catalog-card__badge">Новинка</span>
-            </div>
-            <div class="catalog-card__body">
-              <h2 class="catalog-card__title"><a href="#">{{ film.title }}</a></h2>
-              <p class="catalog-card__desc">{{ filmDesc(film) }}</p>
-            </div>
-          </article>
+          <FilmCard v-for="film in filteredFilms" :key="film.id" :film="film" />
         </div>
         <p class="catalog-cta">
           Хотите заказать показ? <router-link to="/zayavka">Оставьте заявку</router-link> — мы подберём программу под ваше мероприятие.
@@ -75,6 +67,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import FilmCard from '../components/FilmCard.vue'
 
 const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/\s*$/, '')
 const films = ref([])
@@ -123,24 +116,6 @@ function toggleAll(group, checked) {
   if (group === 'categories') selectedCategories.value = checked ? [...opts] : []
   else if (group === 'genres') selectedGenres.value = checked ? [...opts] : []
   else selectedContentTypes.value = checked ? [...opts] : []
-}
-
-function filmDesc(film) {
-  const parts = []
-  if (film.content_types?.length) parts.push(film.content_types.join(', '))
-  if (film.genres?.length) parts.push(film.genres.join(', '))
-  if (film.duration_minutes) parts.push(`${film.duration_minutes} мин`)
-  const age = ageStr(film.age_rating_min, film.age_rating_max)
-  if (age) parts.push(age)
-  const line = parts.join(' · ')
-  return line ? `${line}. ${film.description || ''}`.trim() : (film.description || '')
-}
-
-function ageStr(min, max) {
-  if (min != null && max != null) return `${min}+–${max}+`
-  if (min != null) return `${min}+`
-  if (max != null) return `до ${max}+`
-  return ''
 }
 
 onMounted(async () => {

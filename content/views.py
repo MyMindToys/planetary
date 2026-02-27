@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from .models import MenuCard, Film, Genre, FilmCategory, FilmContentType
 
@@ -13,10 +13,11 @@ def api_catalog_filters(request):
 
 
 def api_films(request):
-    """JSON: список фильмов для каталога (название, описание, возраст от/до, жанры, категории, обложка)."""
+    """JSON: список фильмов для каталога (id, название, описание, возраст от/до, жанры, категории, обложка)."""
     films = []
     for f in Film.objects.all():
         films.append({
+            'id': f.pk,
             'title': f.title,
             'description': f.description,
             'duration_minutes': f.duration_minutes,
@@ -29,6 +30,24 @@ def api_films(request):
             'cover': f.cover.url if f.cover else None,
         })
     return JsonResponse({'films': films})
+
+
+def api_film_detail(request, pk):
+    """JSON: один фильм по id (вся информация)."""
+    f = get_object_or_404(Film, pk=pk)
+    return JsonResponse({
+        'id': f.pk,
+        'title': f.title,
+        'description': f.description,
+        'duration_minutes': f.duration_minutes,
+        'age_rating_min': f.age_rating_min,
+        'age_rating_max': f.age_rating_max,
+        'genres': [g.name for g in f.genres.all()],
+        'categories': [c.name for c in f.categories.all()],
+        'content_types': [t.name for t in f.content_types.all()],
+        'is_new': f.is_new,
+        'cover': f.cover.url if f.cover else None,
+    })
 
 
 def api_menu_cards(request):

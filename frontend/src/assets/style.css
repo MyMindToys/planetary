@@ -433,7 +433,8 @@ body {
   margin-top: 0;
 }
 
-.page-content--catalog .catalog-card {
+/* Карточка фильма */
+.film-card {
   background: #2E1457;
   border-radius: 0;
   overflow: hidden;
@@ -443,19 +444,33 @@ body {
   flex-direction: column;
 }
 
-.page-content--catalog .catalog-card:hover {
+.film-card:hover {
   box-shadow: 0 6px 32px rgba(0, 0, 0, 0.18);
 }
 
-.page-content--catalog .catalog-card__img {
+.film-card__link {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  text-decoration: none;
+  color: inherit;
+}
+
+.film-card__link:hover .film-card__title {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.film-card__cover {
   width: 100%;
   aspect-ratio: 4 / 3;
   background: #1ECAD3;
+  background-size: cover;
+  background-position: center;
   flex-shrink: 0;
   position: relative;
 }
 
-.catalog-card__badge {
+.film-card__badge {
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
@@ -468,40 +483,39 @@ body {
   letter-spacing: 0.02em;
 }
 
-.page-content--catalog .catalog-card__body {
+.film-card__body {
   padding: 1.25rem 1.25rem 1.5rem;
   flex: 1;
   border-top: 6px solid var(--kaleido-red);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.page-content--catalog .catalog-card:nth-child(1) .catalog-card__body { border-top-color: var(--kaleido-red); }
-.page-content--catalog .catalog-card:nth-child(2) .catalog-card__body { border-top-color: var(--kaleido-orange); }
-.page-content--catalog .catalog-card:nth-child(3) .catalog-card__body { border-top-color: var(--kaleido-pink); }
-.page-content--catalog .catalog-card:nth-child(4) .catalog-card__body { border-top-color: var(--kaleido-red); }
-.page-content--catalog .catalog-card:nth-child(5) .catalog-card__body { border-top-color: var(--kaleido-orange); }
-.page-content--catalog .catalog-card:nth-child(6) .catalog-card__body { border-top-color: var(--kaleido-pink); }
-
-.page-content--catalog .catalog-card__title {
+.film-card__title {
   font-size: 1.1rem;
   font-weight: 600;
-  margin: 0 0 0.5rem 0;
+  margin: 0;
   line-height: 1.4;
-}
-
-.page-content--catalog .catalog-card__title a {
   color: #FFFFFF;
-  text-decoration: none;
 }
 
-.page-content--catalog .catalog-card__title a:hover {
-  color: rgba(255, 255, 255, 0.9);
+.film-card__meta {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  margin: 0;
 }
 
-.page-content--catalog .catalog-card__desc {
+.film-card__desc {
   color: rgba(255, 255, 255, 0.7);
   font-size: 0.9rem;
   line-height: 1.5;
   margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .page-content--catalog .catalog-cta {
@@ -517,6 +531,100 @@ body {
 
 .page-content--catalog .catalog-cta a:hover {
   color: var(--kaleido-orange);
+}
+
+/* Страница фильма */
+.page-content--film {
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  background: #1F0B3A;
+  padding: 2rem 1.5rem 3rem;
+  min-height: 50vh;
+}
+
+.film-detail--loading,
+.film-detail:not(.film-detail--loading) {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.film-detail__back {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.film-detail__back:hover {
+  color: var(--kaleido-orange);
+}
+
+.film-detail__top {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.film-detail__cover {
+  aspect-ratio: 4 / 3;
+  background: #1ECAD3;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.film-detail__badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  padding: 0.35rem 0.65rem;
+  background: var(--kaleido-red);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.film-detail__title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  line-height: 1.3;
+  color: #fff;
+}
+
+.film-detail__meta {
+  margin: 0 0 1rem 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 1.5rem;
+  font-size: 0.95rem;
+}
+
+.film-detail__meta dt {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.film-detail__meta dd {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.film-detail__desc {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+@media (max-width: 700px) {
+  .film-detail__top {
+    grid-template-columns: 1fr;
+  }
 }
 
 .page-content--news {
