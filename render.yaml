@@ -1,0 +1,8 @@
+# Render Blueprint: один сервис — Django + раздача собранного Vue
+# В дашборде у сервиса должен быть Build Command = bash build.sh (или применить Blueprint заново).
+services:
+  - type: web
+    runtime: python
+    name: planetary
+    buildCommand: bash build.sh
+    startCommand: gunicorn planetary.wsgi:application
