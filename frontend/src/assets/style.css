@@ -646,11 +646,10 @@ body {
 .news-list {
   list-style: none;
   margin-top: 2rem;
+  padding: 0;
 }
 
 .news-item {
-  background: #2E1457;
-  padding: 1.5rem 1.75rem;
   margin-bottom: 2rem;
   border-radius: 0;
   border-left: 6px solid var(--kaleido-red);
@@ -660,6 +659,25 @@ body {
 
 .news-item:hover {
   box-shadow: 0 6px 32px rgba(0, 0, 0, 0.18);
+}
+
+.news-item__link {
+  display: block;
+  padding: 1.5rem 1.75rem;
+  background: #2E1457;
+  text-decoration: none;
+  color: inherit;
+}
+
+.news-item__more {
+  display: inline-block;
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--accent);
+}
+
+.news-item__link:hover .news-item__more {
+  color: var(--kaleido-orange);
 }
 
 .news-item:nth-child(1) { border-left-color: var(--kaleido-red); }
@@ -688,6 +706,98 @@ body {
   font-size: 0.95rem;
   line-height: 1.5;
   margin: 0;
+}
+
+/* Страница новости */
+.page-content--news-detail {
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+  background: #1F0B3A;
+  padding: 2rem 1.5rem 3rem;
+  min-height: 50vh;
+}
+
+.news-detail__back {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.news-detail__back:hover {
+  color: var(--kaleido-orange);
+}
+
+.news-detail__title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
+  color: #fff;
+}
+
+.news-detail__date {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.9rem;
+  margin: 0 0 1rem 0;
+}
+
+.news-detail__excerpt {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.05rem;
+  line-height: 1.5;
+  margin: 0 0 1.25rem 0;
+  font-weight: 500;
+}
+
+.news-detail__body {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1rem;
+  line-height: 1.65;
+  margin-bottom: 2rem;
+}
+
+.news-detail__body p {
+  margin: 0 0 1rem 0;
+}
+
+.news-detail__body p:last-child {
+  margin-bottom: 0;
+}
+
+.news-detail__gallery-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 1rem 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.news-detail__gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.news-detail__gallery-item {
+  margin: 0;
+}
+
+.news-detail__gallery-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: #2E1457;
+}
+
+.news-detail__gallery-item figcaption {
+  padding: 0.5rem 0 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.4;
 }
 
 @media (max-width: 900px) {

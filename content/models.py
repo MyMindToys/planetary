@@ -101,6 +101,23 @@ class News(models.Model):
         return self.title
 
 
+class NewsImage(models.Model):
+    """Изображение в галерее новости (внизу поста)."""
+    news = models.ForeignKey(News, on_delete=models.CASCADE, related_name='gallery', verbose_name='Новость')
+    image = models.ImageField('Файл', upload_to='news/%Y/%m/')
+    order = models.PositiveSmallIntegerField('Порядок', default=0)
+    caption = models.CharField('Подпись', max_length=255, blank=True)
+    created_at = models.DateTimeField('Создано', auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Фото в новости'
+        verbose_name_plural = 'Галерея новости'
+        ordering = ['order', 'pk']
+
+    def __str__(self):
+        return self.caption or str(self.image)
+
+
 class MenuCard(models.Model):
     """Карточка в блоке меню на главной (4 штуки по центру)."""
     title = models.CharField('Название', max_length=255)

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Image, MenuCard, Genre, FilmCategory, FilmContentType, Film
+from .models import Image, MenuCard, Genre, FilmCategory, FilmContentType, Film, News, NewsImage
 
 
 @admin.register(Genre)
@@ -29,6 +29,22 @@ class FilmAdmin(admin.ModelAdmin):
     list_filter = ('genres', 'categories', 'content_types', 'is_new')
     search_fields = ('title', 'description')
     filter_horizontal = ('genres', 'categories', 'content_types')
+    readonly_fields = ('created_at', 'updated_at')
+
+
+class NewsImageInline(admin.TabularInline):
+    model = NewsImage
+    extra = 0
+    ordering = ('order',)
+
+
+@admin.register(News)
+class NewsAdmin(admin.ModelAdmin):
+    list_display = ('title', 'date', 'created_at')
+    list_filter = ('date',)
+    search_fields = ('title', 'excerpt', 'body')
+    date_hierarchy = 'date'
+    inlines = [NewsImageInline]
     readonly_fields = ('created_at', 'updated_at')
 
 

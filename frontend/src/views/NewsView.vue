@@ -1,24 +1,38 @@
 <template>
   <section class="page-content page-content--news">
     <h1>Новости</h1>
-    <p>Актуальные события и анонсы мобильного планетария «Калейдоскоп».</p>
+    <p class="news-intro">Актуальные события и анонсы мобильного планетария «Калейдоскоп».</p>
 
     <ul class="news-list">
-      <li v-for="item in news" :key="item.title" class="news-item">
-        <h2 class="news-title">{{ item.title }}</h2>
-        <p class="news-date">{{ item.date }}</p>
-        <p class="news-excerpt">{{ item.excerpt }}</p>
+      <li v-for="item in news" :key="item.id" class="news-item">
+        <router-link :to="{ name: 'newsDetail', params: { id: item.id } }" class="news-item__link">
+          <h2 class="news-title">{{ item.title }}</h2>
+          <p class="news-date">{{ formatDate(item.date) }}</p>
+          <p class="news-excerpt">{{ item.excerpt }}</p>
+          <span class="news-item__more">Читать полностью →</span>
+        </router-link>
       </li>
     </ul>
   </section>
 </template>
 
 <script setup>
-const news = [
-  { title: 'Новая программа «Космическая одиссея» в каталоге', date: '28 января 2026', excerpt: 'Добавлена полнокупольная программа для семейного просмотра. Запись на показы открыта.' },
-  { title: 'Планетарий выступил на фестивале науки', date: '22 января 2026', excerpt: '«Калейдоскоп» принял участие в городском фестивале — более 200 зрителей за два дня.' },
-  { title: 'Скидка 15% для школ до конца февраля', date: '15 января 2026', excerpt: 'Для образовательных учреждений действует специальное предложение на групповые показы.' },
-  { title: 'Обновление купола и оборудования', date: '8 января 2026', excerpt: 'Завершена модернизация проекционной системы — качество изображения стало ещё выше.' },
-  { title: 'Новогодние показы — итоги сезона', date: '5 января 2026', excerpt: 'Подводим итоги праздничных программ: более 30 выездов за декабрь.' },
-]
+import { ref, onMounted } from 'vue'
+
+const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/\s*$/, '')
+const news = ref([])
+
+function formatDate(iso) {
+  if (!iso) return ''
+  const d = new Date(iso)
+  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+}
+
+onMounted(async () => {
+  try {
+    const r = await fetch(`${apiBase}/api/news/`)
+    const data = await r.json()
+    if (data.news?.length) news.value = data.news
+  } catch (_) {}
+})
 </script>

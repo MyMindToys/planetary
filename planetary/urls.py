@@ -9,7 +9,7 @@ from django.views.static import serve
 from pathlib import Path
 
 from . import views as planetary_views
-from content.views import api_menu_cards, api_films, api_film_detail, api_catalog_filters
+from content.views import api_menu_cards, api_films, api_film_detail, api_catalog_filters, api_news_list, api_news_detail
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 FRONTEND_DIST = BASE_DIR / 'frontend' / 'dist'
@@ -20,12 +20,14 @@ urlpatterns = [
     path('api/films/', api_films),
     path('api/films/<int:pk>/', api_film_detail),
     path('api/catalog-filters/', api_catalog_filters),
+    path('api/news/', api_news_list),
+    path('api/news/<int:pk>/', api_news_detail),
     re_path(r'^assets/(?P<path>.*)$', serve, {'document_root': str(FRONTEND_DIST / 'assets')}),
     re_path(r'^img/(?P<path>.*)$', serve, {'document_root': str(FRONTEND_DIST / 'img')}),
     re_path(r'^(?P<path>header_fon\.jpg)$', serve, {'document_root': str(FRONTEND_DIST)}),
     path('', planetary_views.spa_view),
     re_path(r'^catalog/', planetary_views.spa_view),
-    path('news/', planetary_views.spa_view),
+    re_path(r'^news/', planetary_views.spa_view),
     path('zayavka/', planetary_views.spa_view),
 ]
 

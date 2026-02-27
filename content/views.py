@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
-from .models import MenuCard, Film, Genre, FilmCategory, FilmContentType
+from .models import MenuCard, Film, Genre, FilmCategory, FilmContentType, News
 
 
 def api_catalog_filters(request):
@@ -47,6 +47,33 @@ def api_film_detail(request, pk):
         'content_types': [t.name for t in f.content_types.all()],
         'is_new': f.is_new,
         'cover': f.cover.url if f.cover else None,
+    })
+
+
+def api_news_list(request):
+    """JSON: список новостей (id, заголовок, дата, краткий текст)."""
+    items = []
+    for n in News.objects.all():
+        items.append({
+            'id': n.pk,
+            'title': n.title,
+            'date': n.date.isoformat(),
+            'excerpt': n.excerpt,
+        })
+    return JsonResponse({'news': items})
+
+
+def api_news_detail(request, pk):
+    """JSON: одна новость по id (полный текст + галерея)."""
+    n = get_object_or_404(News, pk=pk)
+    gallery = [{'url': img.image.url, 'caption': img.caption} for img in n.gallery.all()]
+    return JsonResponse({
+        'id': n.pk,
+        'title': n.title,
+        'date': n.date.isoformat(),
+        'excerpt': n.excerpt,
+        'body': n.body,
+        'gallery': gallery,
     })
 
 
