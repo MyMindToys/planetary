@@ -3,6 +3,7 @@
 set -e
 
 pip install -r requirements.txt
+python manage.py migrate --noinput
 
 # Node нужен для сборки фронта; на Render в Python-сервисе его может не быть — ставим через nvm
 if ! command -v node &>/dev/null; then

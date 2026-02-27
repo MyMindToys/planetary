@@ -9,7 +9,7 @@ def api_menu_cards(request):
     for card in MenuCard.objects.all()[:4]:
         cards.append({
             'title': card.title,
-            'image': request.build_absolute_uri(card.image.url) if card.image else None,
+            'image': card.image.url if card.image else None,
             'link': card.link or '#',
         })
     return JsonResponse({'cards': cards})
