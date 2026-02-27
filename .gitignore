@@ -1,0 +1,15 @@
+*.pyc
+__pycache__/
+*.sqlite3
+.env
+venv/
+.venv/
+node_modules/
+staticfiles/
+ks/
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+out/
