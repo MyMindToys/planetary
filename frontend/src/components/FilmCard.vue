@@ -30,9 +30,9 @@ const coverStyle = computed(() => {
 })
 
 function ageStr(min, max) {
-  if (min != null && max != null) return `${min}+ – ${max}+`
+  if (min != null && max != null) return `${min}+ – ${max}`
   if (min != null) return `${min}+`
-  if (max != null) return `до ${max}+`
+  if (max != null) return `до ${max}`
   return ''
 }
 
