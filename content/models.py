@@ -55,6 +55,24 @@ class News(models.Model):
         return self.title
 
 
+class MenuCard(models.Model):
+    """Карточка в блоке меню на главной (4 штуки по центру)."""
+    title = models.CharField('Название', max_length=255)
+    image = models.ImageField('Картинка', upload_to='menu_cards/%Y/%m/', blank=True, null=True)
+    link = models.CharField('Ссылка', max_length=500, blank=True, help_text='Например: /catalog или /zayavka')
+    order = models.PositiveSmallIntegerField('Порядок', default=0)
+    created_at = models.DateTimeField('Создано', auto_now_add=True)
+    updated_at = models.DateTimeField('Обновлено', auto_now=True)
+
+    class Meta:
+        verbose_name = 'Карточка меню'
+        verbose_name_plural = 'Карточки меню'
+        ordering = ['order']
+
+    def __str__(self):
+        return self.title
+
+
 class Zayavka(models.Model):
     """Заявка на проведение мероприятия."""
     name = models.CharField('Имя', max_length=255)

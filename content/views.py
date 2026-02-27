@@ -1,4 +1,18 @@
 from django.shortcuts import render
+from django.http import JsonResponse
+from .models import MenuCard
+
+
+def api_menu_cards(request):
+    """JSON: карточки меню для главной (название, картинка, ссылка)."""
+    cards = []
+    for card in MenuCard.objects.all()[:4]:
+        cards.append({
+            'title': card.title,
+            'image': request.build_absolute_uri(card.image.url) if card.image else None,
+            'link': card.link or '#',
+        })
+    return JsonResponse({'cards': cards})
 
 
 def index(request):

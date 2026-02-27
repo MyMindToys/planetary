@@ -8,22 +8,18 @@
 
     <section class="buttons-section">
       <div class="buttons-grid">
-        <router-link to="/catalog" class="card-btn">
-          <img src="/img/2026-01-31_09-29-06.png" alt="Каталог фильмов">
-          <span>Каталог фильмов</span>
-        </router-link>
-        <router-link to="/zayavka" class="card-btn">
-          <img src="/img/2026-01-31_09-29-21.png" alt="Оставить заявку">
-          <span>Оставить заявку</span>
-        </router-link>
-        <a href="#" class="card-btn">
-          <img src="/img/2026-01-31_09-29-46.png" alt="Про помещение">
-          <span>Про помещение</span>
-        </a>
-        <a href="#" class="card-btn">
-          <img src="/img/2026-01-31_09-29-54.png" alt="Про планетарий">
-          <span>Про планетарий</span>
-        </a>
+        <template v-for="(card, i) in cards" :key="i">
+          <router-link v-if="card.link && card.link !== '#' && card.link.startsWith('/')" :to="card.link" class="card-btn">
+            <img v-if="card.image" :src="card.image" :alt="card.title">
+            <div v-else class="card-btn__img"></div>
+            <span>{{ card.title }}</span>
+          </router-link>
+          <a v-else :href="card.link || '#'" class="card-btn">
+            <img v-if="card.image" :src="card.image" :alt="card.title">
+            <div v-else class="card-btn__img"></div>
+            <span>{{ card.title }}</span>
+          </a>
+        </template>
       </div>
     </section>
 
@@ -51,4 +47,27 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
+
+const defaultCards = [
+  { title: 'Каталог фильмов', image: null, link: '/catalog' },
+  { title: 'Оставить заявку', image: null, link: '/zayavka' },
+  { title: 'Про помещение', image: null, link: '#' },
+  { title: 'Про планетарий', image: null, link: '#' },
+]
+
+const cards = ref([...defaultCards])
+
+onMounted(async () => {
+  try {
+    const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
+    const res = await fetch(`${apiBase}/api/menu-cards/`)
+    if (res.ok) {
+      const data = await res.json()
+      if (data.cards && data.cards.length > 0) {
+        cards.value = data.cards
+      }
+    }
+  } catch (_) {}
+})
 </script>
