@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Image, MenuCard, Genre, FilmCategory, FilmContentType, Film, News, NewsImage, BannerImage
+from .models import Image, MenuCard, Genre, FilmCategory, FilmContentType, Film, News, NewsImage, BannerImage, EmailSettings, Zayavka
 
 
 @admin.register(Genre)
@@ -64,6 +64,27 @@ class BannerImageAdmin(admin.ModelAdmin):
     list_filter = ('is_active',)
     ordering = ('order',)
     readonly_fields = ('created_at',)
+
+
+@admin.register(EmailSettings)
+class EmailSettingsAdmin(admin.ModelAdmin):
+    list_display = ('sender_email', 'recipient_email')
+    fields = ('sender_email', 'sender_password', 'recipient_email')
+    
+    def has_add_permission(self, request):
+        return not EmailSettings.objects.exists()
+    
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(Zayavka)
+class ZayavkaAdmin(admin.ModelAdmin):
+    list_display = ('name', 'phone', 'email', 'desired_date', 'created_at')
+    list_filter = ('created_at',)
+    search_fields = ('name', 'phone', 'email', 'message')
+    readonly_fields = ('created_at',)
+    date_hierarchy = 'created_at'
 
 
 @admin.register(MenuCard)

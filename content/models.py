@@ -153,6 +153,34 @@ class MenuCard(models.Model):
         return self.title
 
 
+class EmailSettings(models.Model):
+    """Настройки почты для отправки заявок."""
+    sender_email = models.EmailField('Email отправителя (Яндекс)', blank=True, default='', help_text='Полный email для отправки (например, user@yandex.ru)')
+    sender_password = models.CharField('Пароль приложения', max_length=255, blank=True, default='', help_text='Пароль приложения из настроек Яндекс аккаунта (не обычный пароль!)')
+    recipient_email = models.EmailField('Email получателя', blank=True, default='', help_text='Куда отправлять заявки')
+    
+    class Meta:
+        verbose_name = 'Настройки почты'
+        verbose_name_plural = 'Настройки почты'
+    
+    def __str__(self):
+        return f'От: {self.sender_email} → Кому: {self.recipient_email}'
+    
+    def save(self, *args, **kwargs):
+        # Разрешаем только одну запись
+        self.pk = 1
+        super().save(*args, **kwargs)
+    
+    @classmethod
+    def get_settings(cls):
+        obj, _ = cls.objects.get_or_create(pk=1, defaults={
+            'sender_email': '',
+            'sender_password': '',
+            'recipient_email': ''
+        })
+        return obj
+
+
 class Zayavka(models.Model):
     """Заявка на проведение мероприятия."""
     name = models.CharField('Имя', max_length=255)

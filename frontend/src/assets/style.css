@@ -391,6 +391,24 @@ body {
   resize: vertical;
 }
 
+.form-error {
+  padding: 0.75rem 1rem;
+  background: rgba(229, 57, 88, 0.2);
+  border: 1px solid var(--kaleido-red);
+  color: var(--kaleido-red);
+  margin-bottom: 1rem;
+  border-radius: 0;
+}
+
+.form-success {
+  padding: 0.75rem 1rem;
+  background: rgba(30, 202, 211, 0.2);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  margin-bottom: 1rem;
+  border-radius: 0;
+}
+
 .btn-submit {
   display: inline-block;
   padding: 0.75rem 2rem;
@@ -404,9 +422,14 @@ body {
   transition: background 0.2s, transform 0.2s;
 }
 
-.btn-submit:hover {
+.btn-submit:hover:not(:disabled) {
   background: var(--text-light);
   transform: scale(1.02);
+}
+
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .page-content--catalog {

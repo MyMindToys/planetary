@@ -1,6 +1,11 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
-from .models import MenuCard, Film, Genre, FilmCategory, FilmContentType, News, BannerImage
+from django.core.mail import send_mail
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from datetime import datetime
+from .models import MenuCard, Film, Genre, FilmCategory, FilmContentType, News, BannerImage, Zayavka, EmailSettings
 
 
 def api_catalog_filters(request):
@@ -148,6 +153,84 @@ def catalog(request):
 def news(request):
     """Новости — статичный контент."""
     return render(request, 'content/news.html')
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def api_submit_zayavka(request):
+    """POST: отправка заявки (сохранение в БД + email на Яндекс)."""
+    
+    try:
+        name = request.POST.get('name', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        email = request.POST.get('email', '').strip()
+        desired_date = request.POST.get('date', '').strip()
+        message = request.POST.get('message', '').strip()
+        
+        if not name or not phone:
+            return JsonResponse({'error': 'Имя и телефон обязательны'}, status=400)
+        
+        # Парсим дату
+        date_obj = None
+        if desired_date:
+            try:
+                date_obj = datetime.strptime(desired_date, '%Y-%m-%d').date()
+            except ValueError:
+                pass
+        
+        # Сохраняем заявку
+        zayavka = Zayavka.objects.create(
+            name=name,
+            phone=phone,
+            email=email if email else '',
+            desired_date=date_obj,
+            message=message,
+        )
+        
+        # Отправляем email
+        email_settings = EmailSettings.get_settings()
+        if email_settings.recipient_email and email_settings.sender_email and email_settings.sender_password:
+            date_str = desired_date if desired_date else 'не указана'
+            email_body = f"""Новая заявка с сайта планетария
+
+Имя: {name}
+Телефон: {phone}
+Email: {email if email else 'не указан'}
+Желаемая дата: {date_str}
+Сообщение:
+{message if message else 'не указано'}
+
+Дата заявки: {zayavka.created_at.strftime('%d.%m.%Y %H:%M')}
+"""
+            try:
+                # Временно переопределяем настройки почты из БД
+                from django.core import mail
+                connection = mail.get_connection(
+                    backend='django.core.mail.backends.smtp.EmailBackend',
+                    host='smtp.yandex.ru',
+                    port=465,
+                    username=email_settings.sender_email,
+                    password=email_settings.sender_password,
+                    use_ssl=True,
+                )
+                send_mail(
+                    subject=f'Новая заявка от {name}',
+                    message=email_body,
+                    from_email=email_settings.sender_email,
+                    recipient_list=[email_settings.recipient_email],
+                    fail_silently=False,
+                    connection=connection,
+                )
+            except Exception as e:
+                # Логируем ошибку, но не падаем
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.error(f'Ошибка отправки email: {e}')
+        
+        return JsonResponse({'success': True, 'message': 'Заявка отправлена'})
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 def zayavka(request):

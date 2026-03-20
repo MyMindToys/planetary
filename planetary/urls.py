@@ -6,7 +6,7 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from content.views import api_menu_cards, api_films, api_film_detail, api_catalog_filters, api_news_list, api_news_detail, api_banners
+from content.views import api_menu_cards, api_films, api_film_detail, api_catalog_filters, api_news_list, api_news_detail, api_banners, api_submit_zayavka
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -17,6 +17,7 @@ urlpatterns = [
     path('api/catalog-filters/', api_catalog_filters),
     path('api/news/', api_news_list),
     path('api/news/<int:pk>/', api_news_detail),
+    path('api/zayavka/', api_submit_zayavka),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
