@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Image, MenuCard, Genre, FilmCategory, FilmContentType, Film, News, NewsImage
+from .models import Image, MenuCard, Genre, FilmCategory, FilmContentType, Film, News, NewsImage, BannerImage
 
 
 @admin.register(Genre)
@@ -24,11 +24,12 @@ class FilmContentTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Film)
 class FilmAdmin(admin.ModelAdmin):
-    list_display = ('title', 'is_new', 'duration_minutes', 'age_rating_min', 'age_rating_max')
-    list_editable = ('is_new',)
+    list_display = ('title', 'order', 'is_new', 'duration_minutes', 'age_rating_min', 'age_rating_max')
+    list_editable = ('order', 'is_new')
     list_filter = ('genres', 'categories', 'content_types', 'is_new')
     search_fields = ('title', 'description')
     filter_horizontal = ('genres', 'categories', 'content_types')
+    ordering = ('order', 'title')
     readonly_fields = ('created_at', 'updated_at')
 
 
@@ -54,6 +55,15 @@ class ImageAdmin(admin.ModelAdmin):
     list_filter = ('created_at',)
     search_fields = ('title', 'alt_text')
     readonly_fields = ('created_at', 'updated_at')
+
+
+@admin.register(BannerImage)
+class BannerImageAdmin(admin.ModelAdmin):
+    list_display = ('image', 'is_active', 'order', 'created_at')
+    list_editable = ('is_active', 'order')
+    list_filter = ('is_active',)
+    ordering = ('order',)
+    readonly_fields = ('created_at',)
 
 
 @admin.register(MenuCard)

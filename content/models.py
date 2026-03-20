@@ -70,6 +70,7 @@ class Film(models.Model):
     categories = models.ManyToManyField(FilmCategory, blank=True, verbose_name='Категории')
     content_types = models.ManyToManyField(FilmContentType, blank=True, verbose_name='Тип контента')
     is_new = models.BooleanField('Новинка', default=False)
+    order = models.PositiveSmallIntegerField('Порядок', default=100)
     cover = models.ImageField('Обложка', upload_to='films/%Y/%m/', blank=True, null=True)
     created_at = models.DateTimeField('Создано', auto_now_add=True)
     updated_at = models.DateTimeField('Обновлено', auto_now=True)
@@ -77,7 +78,7 @@ class Film(models.Model):
     class Meta:
         verbose_name = 'Фильм'
         verbose_name_plural = 'Фильмы'
-        ordering = ['title']
+        ordering = ['order', 'title']
 
     def __str__(self):
         return self.title
@@ -116,6 +117,22 @@ class NewsImage(models.Model):
 
     def __str__(self):
         return self.caption or str(self.image)
+
+
+class BannerImage(models.Model):
+    """Изображение для баннера на главной (карусель)."""
+    image = models.ImageField('Файл', upload_to='banner/%Y/%m/')
+    is_active = models.BooleanField('Показывать', default=True)
+    order = models.PositiveSmallIntegerField('Порядок', default=0)
+    created_at = models.DateTimeField('Создано', auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Баннер'
+        verbose_name_plural = 'Баннеры'
+        ordering = ['order', 'pk']
+
+    def __str__(self):
+        return f'Баннер #{self.pk} (порядок {self.order})'
 
 
 class MenuCard(models.Model):

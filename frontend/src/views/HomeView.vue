@@ -1,7 +1,19 @@
 <template>
   <div>
     <section class="hero">
-      <div class="hero-placeholder">
+      <div v-if="banners.length" class="hero-carousel">
+        <div class="hero-carousel__track" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
+          <div v-for="banner in banners" :key="banner.id" class="hero-carousel__slide">
+            <img :src="banner.image" alt="Баннер" class="hero-carousel__img">
+          </div>
+        </div>
+        <button v-if="banners.length > 1" @click="prevSlide" class="hero-carousel__btn hero-carousel__btn--prev">‹</button>
+        <button v-if="banners.length > 1" @click="nextSlide" class="hero-carousel__btn hero-carousel__btn--next">›</button>
+        <div v-if="banners.length > 1" class="hero-carousel__dots">
+          <button v-for="(banner, i) in banners" :key="banner.id" @click="currentIndex = i" :class="['hero-carousel__dot', { 'hero-carousel__dot--active': i === currentIndex }]"></button>
+        </div>
+      </div>
+      <div v-else class="hero-placeholder">
         <p>Место для карусели или баннера</p>
       </div>
     </section>
@@ -47,7 +59,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 const defaultCards = [
   { title: 'Каталог фильмов', image: null, link: '/catalog' },
@@ -57,17 +69,44 @@ const defaultCards = [
 ]
 
 const cards = ref([...defaultCards])
+const banners = ref([])
+const currentIndex = ref(0)
+let carouselInterval = null
+
+function nextSlide() {
+  currentIndex.value = (currentIndex.value + 1) % banners.value.length
+}
+
+function prevSlide() {
+  currentIndex.value = (currentIndex.value - 1 + banners.value.length) % banners.value.length
+}
 
 onMounted(async () => {
+  const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
   try {
-    const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
-    const res = await fetch(`${apiBase}/api/menu-cards/`)
-    if (res.ok) {
-      const data = await res.json()
+    const [cardsRes, bannersRes] = await Promise.all([
+      fetch(`${apiBase}/api/menu-cards/`),
+      fetch(`${apiBase}/api/banners/`),
+    ])
+    if (cardsRes.ok) {
+      const data = await cardsRes.json()
       if (data.cards && data.cards.length > 0) {
         cards.value = data.cards
       }
     }
+    if (bannersRes.ok) {
+      const data = await bannersRes.json()
+      if (data.banners && data.banners.length > 0) {
+        banners.value = data.banners
+        if (banners.value.length > 1) {
+          carouselInterval = setInterval(nextSlide, 5000)
+        }
+      }
+    }
   } catch (_) {}
+})
+
+onUnmounted(() => {
+  if (carouselInterval) clearInterval(carouselInterval)
 })
 </script>

@@ -131,6 +131,86 @@ body {
   z-index: 1;
 }
 
+.hero-carousel {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  margin: 2rem 0;
+  overflow: hidden;
+  border-radius: 0;
+}
+
+.hero-carousel__track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s ease;
+}
+
+.hero-carousel__slide {
+  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-carousel__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-carousel__btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  z-index: 2;
+  transition: background 0.2s;
+}
+
+.hero-carousel__btn:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.hero-carousel__btn--prev {
+  left: 1rem;
+}
+
+.hero-carousel__btn--next {
+  right: 1rem;
+}
+
+.hero-carousel__dots {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 2;
+}
+
+.hero-carousel__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.hero-carousel__dot--active {
+  background: #fff;
+}
+
 .buttons-section {
   max-width: 1200px;
   margin: 0 auto;
@@ -516,6 +596,43 @@ body {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.catalog-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 2rem 0;
+}
+
+.catalog-pagination__btn {
+  min-width: 40px;
+  height: 40px;
+  padding: 0 0.75rem;
+  background: #2E1457;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.catalog-pagination__btn:hover:not(:disabled) {
+  background: #3A1F6B;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.catalog-pagination__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.catalog-pagination__btn--active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 600;
 }
 
 .page-content--catalog .catalog-cta {

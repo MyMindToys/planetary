@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
-from .models import MenuCard, Film, Genre, FilmCategory, FilmContentType, News
+from .models import MenuCard, Film, Genre, FilmCategory, FilmContentType, News, BannerImage
 
 
 def api_catalog_filters(request):
@@ -13,9 +13,37 @@ def api_catalog_filters(request):
 
 
 def api_films(request):
-    """JSON: список фильмов для каталога (id, название, описание, возраст от/до, жанры, категории, обложка)."""
+    """JSON: список фильмов для каталога с пагинацией и фильтрацией (по 16 на странице)."""
+    page = int(request.GET.get('page', 1))
+    page_size = int(request.GET.get('page_size', 16))
+    
+    queryset = Film.objects.all()
+    
+    # Фильтры
+    categories = request.GET.getlist('categories')
+    genres = request.GET.getlist('genres')
+    content_types = request.GET.getlist('content_types')
+    age_min = request.GET.get('age_min')
+    age_max = request.GET.get('age_max')
+    
+    if categories:
+        queryset = queryset.filter(categories__name__in=categories).distinct()
+    if genres:
+        queryset = queryset.filter(genres__name__in=genres).distinct()
+    if content_types:
+        queryset = queryset.filter(content_types__name__in=content_types).distinct()
+    if age_min:
+        queryset = queryset.filter(age_rating_max__gte=int(age_min))
+    if age_max:
+        queryset = queryset.filter(age_rating_min__lte=int(age_max))
+    
+    total = queryset.count()
+    
+    start = (page - 1) * page_size
+    end = start + page_size
+    
     films = []
-    for f in Film.objects.all():
+    for f in queryset[start:end]:
         films.append({
             'id': f.pk,
             'title': f.title,
@@ -29,7 +57,14 @@ def api_films(request):
             'is_new': f.is_new,
             'cover': f.cover.url if f.cover else None,
         })
-    return JsonResponse({'films': films})
+    
+    return JsonResponse({
+        'films': films,
+        'total': total,
+        'page': page,
+        'page_size': page_size,
+        'total_pages': (total + page_size - 1) // page_size if total > 0 else 0,
+    })
 
 
 def api_film_detail(request, pk):
@@ -75,6 +110,17 @@ def api_news_detail(request, pk):
         'body': n.body,
         'gallery': gallery,
     })
+
+
+def api_banners(request):
+    """JSON: активные баннеры для карусели (только с is_active=True)."""
+    banners = []
+    for b in BannerImage.objects.filter(is_active=True):
+        banners.append({
+            'id': b.pk,
+            'image': b.image.url,
+        })
+    return JsonResponse({'banners': banners})
 
 
 def api_menu_cards(request):

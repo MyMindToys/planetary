@@ -55,7 +55,12 @@
 
       <div class="catalog-main">
         <div class="catalog-grid">
-          <FilmCard v-for="film in filteredFilms" :key="film.id" :film="film" />
+          <FilmCard v-for="film in films" :key="film.id" :film="film" />
+        </div>
+        <div v-if="totalPages > 1" class="catalog-pagination">
+          <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1" class="catalog-pagination__btn">‹</button>
+          <button v-for="p in visiblePages" :key="p" @click="goToPage(p)" :class="['catalog-pagination__btn', { 'catalog-pagination__btn--active': p === currentPage }]">{{ p }}</button>
+          <button @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages" class="catalog-pagination__btn">›</button>
         </div>
         <p class="catalog-cta">
           Хотите заказать показ? <router-link to="/zayavka">Оставьте заявку</router-link> — мы подберём программу под ваше мероприятие.
@@ -66,7 +71,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import FilmCard from '../components/FilmCard.vue'
 
 const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/\s*$/, '')
@@ -77,33 +82,64 @@ const selectedGenres = ref([])
 const selectedContentTypes = ref([])
 const selectedAgeMin = ref(null)
 const selectedAgeMax = ref(null)
+const currentPage = ref(1)
+const totalPages = ref(0)
+const total = ref(0)
+const loading = ref(false)
 
-const filteredFilms = computed(() => {
-  let list = films.value
-  if (selectedCategories.value.length) {
-    list = list.filter(f => (f.categories || []).some(c => selectedCategories.value.includes(c)))
+const visiblePages = computed(() => {
+  const pages = []
+  const maxVisible = 7
+  let start = Math.max(1, currentPage.value - Math.floor(maxVisible / 2))
+  let end = Math.min(totalPages.value, start + maxVisible - 1)
+  if (end - start < maxVisible - 1) {
+    start = Math.max(1, end - maxVisible + 1)
   }
-  if (selectedGenres.value.length) {
-    list = list.filter(f => (f.genres || []).some(g => selectedGenres.value.includes(g)))
+  for (let i = start; i <= end; i++) {
+    pages.push(i)
   }
-  if (selectedContentTypes.value.length) {
-    list = list.filter(f => (f.content_types || []).some(t => selectedContentTypes.value.includes(t)))
-  }
-  const ageMin = selectedAgeMin.value != null && selectedAgeMin.value !== '' ? Number(selectedAgeMin.value) : null
-  const ageMax = selectedAgeMax.value != null && selectedAgeMax.value !== '' ? Number(selectedAgeMax.value) : null
-  if (ageMin != null || ageMax != null) {
-    list = list.filter(f => {
-      const fMin = f.age_rating_min != null ? f.age_rating_min : 0
-      const fMax = f.age_rating_max != null ? f.age_rating_max : 99
-      if (ageMin != null && ageMax != null) {
-        return fMin <= ageMax && fMax >= ageMin
-      }
-      if (ageMin != null) return fMax >= ageMin
-      return fMin <= ageMax
-    })
-  }
-  return list
+  return pages
 })
+
+async function loadFilms() {
+  loading.value = true
+  try {
+    const params = new URLSearchParams()
+    params.append('page', currentPage.value.toString())
+    params.append('page_size', '16')
+    if (selectedCategories.value.length) {
+      selectedCategories.value.forEach(c => params.append('categories', c))
+    }
+    if (selectedGenres.value.length) {
+      selectedGenres.value.forEach(g => params.append('genres', g))
+    }
+    if (selectedContentTypes.value.length) {
+      selectedContentTypes.value.forEach(t => params.append('content_types', t))
+    }
+    if (selectedAgeMin.value != null && selectedAgeMin.value !== '') {
+      params.append('age_min', selectedAgeMin.value.toString())
+    }
+    if (selectedAgeMax.value != null && selectedAgeMax.value !== '') {
+      params.append('age_max', selectedAgeMax.value.toString())
+    }
+    
+    const res = await fetch(`${apiBase}/api/films/?${params}`)
+    const data = await res.json()
+    if (data.films) {
+      films.value = data.films
+      total.value = data.total || 0
+      totalPages.value = data.total_pages || 0
+    }
+  } catch (_) {}
+  loading.value = false
+}
+
+function goToPage(page) {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page
+    loadFilms()
+  }
+}
 
 function isAllSelected(group) {
   const opts = filterOptions.value[group] || []
@@ -120,16 +156,18 @@ function toggleAll(group, checked) {
 
 onMounted(async () => {
   try {
-    const [filmsRes, filtersRes] = await Promise.all([
-      fetch(`${apiBase}/api/films/`),
-      fetch(`${apiBase}/api/catalog-filters/`),
-    ])
-    const filmsData = await filmsRes.json()
+    const filtersRes = await fetch(`${apiBase}/api/catalog-filters/`)
     const filtersData = await filtersRes.json()
-    if (filmsData.films?.length) films.value = filmsData.films
     if (filtersData.categories) filterOptions.value.categories = filtersData.categories
     if (filtersData.genres) filterOptions.value.genres = filtersData.genres
     if (filtersData.content_types) filterOptions.value.content_types = filtersData.content_types
+    await loadFilms()
   } catch (_) {}
+})
+
+// Перезагружаем при изменении фильтров
+watch([selectedCategories, selectedGenres, selectedContentTypes, selectedAgeMin, selectedAgeMax], () => {
+  currentPage.value = 1
+  loadFilms()
 })
 </script>
